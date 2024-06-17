@@ -6,7 +6,6 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from database.config import users
 from filter.chat_types import ChatTypeFilter
-from handlers.user_panel.help_functions import inline_keyboard
 
 # Create router for private chats
 user_private_router = Router()
@@ -15,7 +14,7 @@ user_private_router.message.filter(ChatTypeFilter(['private']))
 # Define messages in different languages
 messages = {
     'ru': {
-        'welcome': "Добро пожаловать в наш магазин! 😊\nРады видеть вас в нашем магазине! 😊\n\nМы предлагаем широкий выбор товаров по доступным ценам.\nВыбирайте из нашего каталога или воспользуйтесь поиском.\n\nНадеемся, что вы найдете у нас то, что искали.\nСвяжитесь с нами, если у вас возникнут вопросы.",
+        'welcome': "Рады видеть вас в нашем магазине! 😊\n\nМы предлагаем широкий выбор товаров по доступным ценам.\nВыбирайте из нашего каталога или воспользуйтесь поиском.\n\nНадеемся, что вы найдете у нас то, что искали.\nСвяжитесь с нами, если у вас возникнут вопросы.",
         'catalog': "🛍️ Каталог товаров",
         'search': "🔍 Поиск товаров",
         'popular_products': "🚀 Популярные товары",
@@ -27,7 +26,7 @@ messages = {
         'select_language': "🌐 Выбрать язык"
     },
     'en': {
-        'welcome': "Welcome to our store! 😊\nWe are glad to see you in our store! 😊\n\nWe offer a wide range of products at affordable prices.\nChoose from our catalog or use the search.\n\nWe hope you find what you were looking for.\nContact us if you have any questions.",
+        'welcome': "We are glad to see you in our store! 😊\n\nWe offer a wide range of products at affordable prices.\nChoose from our catalog or use the search.\n\nWe hope you find what you were looking for.\nContact us if you have any questions.",
         'catalog': "🛍️ Product Catalog",
         'search': "🔍 Product Search",
         'popular_products': "🚀 Popular Products",
@@ -70,7 +69,7 @@ async def start_cmd(message: types.Message):
     keyboard = create_inline_keyboard(language)
     await message.answer_photo(
         photo=types.FSInputFile('media/images/photo_2024-03-28_06-21-55.jpg'),
-        caption=f"{messages[language]['welcome']}",
+        caption=f" {message.from_user.full_name}! 😊\n\n{messages[language]['welcome']}",
         reply_markup=keyboard
     )
 
@@ -85,7 +84,7 @@ async def start_command_callback_query(query: types.CallbackQuery) -> None:
     keyboard = create_inline_keyboard(language)
     await query.message.answer_photo(
         photo=types.FSInputFile('media/images/photo_2024-03-28_06-21-55.jpg'),
-        caption=f"{messages[language]['welcome']}",
+        caption=f"{query.from_user.full_name}! 😊\n\n{messages[language]['welcome']}",
         reply_markup=keyboard
     )
 
@@ -114,7 +113,7 @@ async def set_language_callback(query: types.CallbackQuery):
         user_preferences[user_id]['language'] = 'en'
         response = "Language set to English."
 
-    await query.message.answer(response,reply_markup=inline_keyboard())
+    await query.message.answer(response)
 
 @user_private_router.callback_query(F.data == 'select_language')
 async def select_language_callback(query: types.CallbackQuery):

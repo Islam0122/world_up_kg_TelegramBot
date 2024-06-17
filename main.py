@@ -27,7 +27,7 @@ from handlers.user_panel.popular_products import popular_products_router
 from handlers.user_panel.review_functions import review_private_router
 from handlers.user_panel.about_us import about_private_router
 from handlers.user_panel.help_functions import help_private_router
-from handlers.user_panel.unknown_functions import unknown_private_router
+from handlers.user_panel.unknown_functions import unknown_private_router, unknown_2private_router
 from handlers.user_panel.start_functions import user_private_router
 
 from common.bot_cmds_list import private
@@ -39,6 +39,7 @@ bot.my_admins_list = [5627082052, 974193106, ]
 
 dp = Dispatcher()
 
+dp.include_router(unknown_private_router)
 dp.include_router(add_product_router)
 dp.include_router(catalog_router)
 dp.include_router(send_message_private_router)
@@ -52,7 +53,7 @@ dp.include_router(review_private_router)
 dp.include_router(about_private_router)
 dp.include_router(user_private_router)
 dp.include_router(help_private_router)
-dp.include_router(unknown_private_router)
+dp.include_router(unknown_2private_router)
 dp.include_router(user_group_router)
 
 async def on_startup(bot):

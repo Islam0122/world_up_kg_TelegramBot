@@ -9,7 +9,8 @@ from filter.chat_types import ChatTypeFilter, IsAdmin
 from handlers.admin_panel.keyboards import get_sections_keyboard, admin_inline_keyboard, \
     get_categories_clothing_keyboard, get_categories_footwear_keyboard, get_categories_wear_keyboard, \
     get_sizes_clothing_keyboard, get_sizes_footwear_keyboard, get_gender_keyboard, get_gender_gen_keyboard
-from handlers.user_panel.order_functions import OrderState
+from handlers.user_panel.order_functions import OrderState, texts
+from handlers.user_panel.start_functions import user_preferences
 from keyboard_list.reply import get_keyboard
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.model import Product
@@ -53,91 +54,10 @@ class AddProduct(StatesGroup):
         'AddProduct:image': 'Отправьте изображение товара 🖼️:',
     }
 
-
-@add_product_router.message(StateFilter("*"), Command("отмена"))
-@add_product_router.message(StateFilter("*"), F.text.casefold() == "отмена")
-async def cancel_handler(message: types.Message, state: FSMContext) -> None:
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    if AddProduct.product_for_change:
-        AddProduct.product_for_change = None
-    await state.clear()
-    keyboard = ReplyKeyboardRemove()
-    await message.answer("🚫 Действие отменено", reply_markup=keyboard)
-
-
-# Вернутся на шаг назад (на прошлое состояние)
-@add_product_router.message(StateFilter("*"), Command("назад"))
-@add_product_router.message(StateFilter("*"), F.text.casefold() == "назад")
-async def back_handler(message: types.Message, state: FSMContext) -> None:
-    current_state = await state.get_state()
-    data = await state.get_data()
-
-    if current_state == OrderState.Name:
-        await message.answer(
-            '⏪ Предыдущего шага нет. Чтобы вернуться, введите ФИО или нажмите "Отмена" ⏪')
-
-        return
-
-    previous = None
-    for step in OrderState.__all_states__:
-        if step.state == current_state:
-            await state.set_state(previous)
-            await message.answer(
-                f"✅ Отлично! Вы вернулись к прошлому шагу:\n{OrderState.texts[previous.state]}",
-            )
-            return
-        previous = step
-    if current_state == AddProduct.name:
-        await message.answer(
-            '⏪ Предыдущего шага нет. Чтобы вернуться, введите название или нажмите "Отмена" ⏪')
-        await state.set_state(AddProduct.name)
-    if current_state == AddProduct.description:
-        await message.answer(
-            '✅ Отлично! Вы вернулись к прошлому шагу :🛍️ Введите название:')
-        await state.set_state(AddProduct.name)
-    if current_state == AddProduct.section:
-        await message.answer("✅ Отлично! Вы вернулись к прошлому шагу:📝 Введите описание:", reply_markup=keyboard)
-        await state.set_state(AddProduct.description)
-    if current_state == AddProduct.category:
-        await message.answer("✅ Отлично! Вы вернулись к прошлому шагу: Выберите раздел продукта:",
-                             reply_markup=get_sections_keyboard())
-        await state.set_state(AddProduct.section)
-    if current_state == AddProduct.size:
-        section = data['section']
-        if section == "одежда":
-            await message.answer("Выберите категорию одежды:", reply_markup=get_categories_clothing_keyboard())
-            await state.set_state(AddProduct.category)
-        elif section == "обувь":
-            await message.answer("Выберите категорию обуви:", reply_markup=get_categories_footwear_keyboard())
-            await state.set_state(AddProduct.category)
-        elif section == "другие":
-            await message.answer(
-                "Выберите категорию товаров из раздела Другие: ", reply_markup=get_categories_wear_keyboard())
-            await state.set_state(AddProduct.category)
-        else:
-            await message.answer("⚠️ Пожалуйста, используйте кнопки на клавиатуре.")
-    if current_state == AddProduct.gender:
-        category = data['category']
-        if category in ["кофты", "лонгсливы", "футболки", "худи", "куртки", "штаны", "шорты"]:
-            await message.answer("Выберите размер:",
-                                 reply_markup=get_sizes_clothing_keyboard())
-            await state.set_state(AddProduct.size)
-        elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "сапоги"]:
-            await message.answer("Выберите размер:",
-                                 reply_markup=get_sizes_footwear_keyboard())
-            await state.set_state(AddProduct.size)
-
-        else:
-            await message.answer("⚠️ Пожалуйста, используйте кнопки на клавиатуре.")
-    if current_state == AddProduct.price:
-        await message.answer("Для какого  предназначен товар:",
-                             reply_markup=get_gender_keyboard())
-        await state.set_state(AddProduct.gender)
-    if current_state == AddProduct.image:
-        await message.answer("💬 Отлично! Теперь введите стоимость:", reply_markup=keyboard)
-        await state.set_state(AddProduct.price)
+cancel_messages = {
+    'ru': "🚫 Действие отменено",
+    'en': "🚫 Action cancelled",
+}
 
 
 # ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> add  product
