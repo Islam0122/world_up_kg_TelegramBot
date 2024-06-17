@@ -47,6 +47,7 @@ order_router.message.filter(ChatTypeFilter(["private"]))
 @order_router.callback_query(StateFilter(None), F.data.startswith("buy_"))
 async def order_product_callback(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     product_id = callback.data.split("_")[-1]
+    print(product_id)
     message = callback.message
     if message:
         await message.answer(
@@ -103,13 +104,12 @@ async def process_address(message: types.Message, state: FSMContext, bot: Bot, s
     keyboard = ReplyKeyboardRemove()
     data = await state.get_data()  # Получаем данные из состояния
     if message.text:
-        await state.update_data(address=message.text)
         user_info = f"{message.from_user.first_name}"
         if message.from_user.last_name:
             user_info += f" {message.from_user.last_name}"
         if message.from_user.username:
             user_info += f" (@{message.from_user.username})"
-        product = await orm_get_product(session, data['product_id'])
+        product = await orm_get_product(session,data.get('product_id'))
         if product.section.lower() == 'другие':  # Check for lowercase 'другие'
             size_info = ""  # Если раздел "Другие", размер не выводится
         else:

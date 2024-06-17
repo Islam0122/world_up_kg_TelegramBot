@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
 
 from dotenv import find_dotenv, load_dotenv
+
+from handlers.group_panel.user_group_private import user_group_router
 from middlewares.db import DataBaseSession
 
 load_dotenv(find_dotenv())
@@ -51,7 +53,7 @@ dp.include_router(about_private_router)
 dp.include_router(user_private_router)
 dp.include_router(help_private_router)
 dp.include_router(unknown_private_router)
-
+dp.include_router(user_group_router)
 
 async def on_startup(bot):
     run_param = False

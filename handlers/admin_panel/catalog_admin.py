@@ -53,7 +53,7 @@ async def start_catalog_filtering(callback_query: types.CallbackQuery, state: FS
     message = callback_query.message
     await message.answer_photo(
         photo=types.FSInputFile('media/images/scale_1200.png'),
-        caption="Выберите раздел, в котором Xвы ищете товар:",
+        caption="Выберите раздел, в котором вы ищете товар:",
         parse_mode="HTML",
         reply_markup=get_sections_keyboard()
     )

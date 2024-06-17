@@ -76,7 +76,19 @@ def get_categories_wear_keyboard():  # -> о другие
     )
     return keyboard
 
-
+def get_gender_gen_keyboard():
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [ KeyboardButton(text="Мужской"),
+              KeyboardButton(text="Женская"),
+              KeyboardButton(text="Для всех")],
+            [
+                KeyboardButton(text="Отмена"),
+            ]
+        ],
+        resize_keyboard=True
+    )
+    return keyboard
 
 def get_gender_keyboard():
     keyboard = ReplyKeyboardMarkup(

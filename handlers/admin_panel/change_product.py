@@ -8,7 +8,7 @@ from database.config import group_admin_chat_id, chat_id
 from filter.chat_types import ChatTypeFilter, IsAdmin
 from handlers.admin_panel.keyboards import get_sections_keyboard, admin_inline_keyboard, \
     get_categories_clothing_keyboard, get_categories_footwear_keyboard, get_categories_wear_keyboard, \
-    get_sizes_clothing_keyboard, get_sizes_footwear_keyboard, get_gender_keyboard
+    get_sizes_clothing_keyboard, get_sizes_footwear_keyboard, get_gender_keyboard, get_gender_gen_keyboard
 from handlers.user_panel.order_functions import OrderState
 from keyboard_list.reply import get_keyboard
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -239,7 +239,7 @@ async def get_category(message: types.Message, state: FSMContext):
     elif category in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"]:
         await state.update_data(size='.')
         await message.answer("Для какого  предназначен товар:",
-                             reply_markup=get_gender_keyboard())
+                             reply_markup= get_gender_gen_keyboard())
         await state.set_state(AddProduct.gender)
     else:
         await message.answer("⚠️ Пожалуйста, используйте кнопки на клавиатуре.")
@@ -285,20 +285,22 @@ async def get_type(message: types.Message, state: FSMContext):
 
     if message.text == ".":
         await state.update_data(gender=AddProduct.product_for_change.gender)
-    else:
-        await state.update_data(gender=gender)
-    if data['category'] in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"]:
+    if data['category'] in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"] and gender.lower() in ["Мужской","Женская","Для всех",]:
         keyboardфы = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Отмена")],
             ],
             resize_keyboard=True,
         )
+        await state.update_data(gender=gender)
         await message.answer("💬 Отлично! Теперь введите стоимость:", reply_markup=keyboardфы)
-
-    else:
+        await state.set_state(AddProduct.price)
+    if gender.lower() in ["мужской","женская","для всех",]:
+        await state.update_data(gender=gender)
         await message.answer("💬 Отлично! Теперь введите стоимость:", reply_markup=keyboard)
-    await state.set_state(AddProduct.price)
+        await state.set_state(AddProduct.price)
+    else:
+        await message.answer("Пожалуйста, используйте кнопки на клавиатуре.")
 
 
 @add_product_router.message(AddProduct.gender)

@@ -35,6 +35,7 @@ async def start_send_message_to_all_users(message: types.Message, state: FSMCont
 @send_message_private_router.message(SendMessageState.WaitingForReview)
 async def send_message_to_all_users(message: types.Message, state: FSMContext,bot:Bot):
     for user_id in users:
+        if user_id not in bot.my_admins_list:
             if message.document:
                 file_id = message.document.file_id
                 caption = message.caption

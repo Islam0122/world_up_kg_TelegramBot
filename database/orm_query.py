@@ -11,10 +11,9 @@ async def orm_get_products(session: AsyncSession):
 
 
 async def orm_get_product(session: AsyncSession, product_id: int):
-    query = select(Product).where(Product.id == product_id)
+    query = select(Product).filter(Product.id == int(product_id))
     result = await session.execute(query)
     return result.scalar()
-
 
 # -> ########### Админка: добавить/изменить/удалить товар ####################### <-#
 
@@ -42,7 +41,7 @@ async def orm_update_product(session: AsyncSession, product_id: int, data):
         section=data["section"],
         category=data["category"],
         gender=data["gender"],
-        size=data["size"],)
+        size=data["size"], )
     await session.execute(query)
     await session.commit()
 
@@ -52,17 +51,19 @@ async def orm_delete_product(session: AsyncSession, product_id: int):
     await session.execute(query)
     await session.commit()
 
+
 async def orm_search_products(session: AsyncSession, search_query: str):
-    query = (
-        select(Product)
-        .filter(
-            or_(
-                Product.name.ilike(f'%{search_query}%'),  # Поиск по имени (name)
-                Product.id == search_query,  # Поиск по id
-                Product.price.ilike(f'%{search_query}%'),  # Поиск по цене (price)
-            )
+    try:
+        search_id = int(search_query)
+    except ValueError:
+        search_id = None
+
+    query = select(Product).filter(
+        or_(
+            Product.name.ilike(f'%{search_query}%'),
+            Product.id == search_id,
+            Product.price.ilike(f'%{search_query}%')
         )
     )
     result = await session.execute(query)
     return result.scalars().all()
-
