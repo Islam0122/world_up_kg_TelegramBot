@@ -172,9 +172,20 @@ async def process_address(message: types.Message, state: FSMContext, bot: Bot, s
             f"Адрес: {message.text}\n"
             f"Пожалуйста, свяжитесь с пользователем для уточнения деталей."
         )
+        photos = [
+            product.image1,
+            product.image2,
+            product.image3,
+            product.image4,
+        ]
+        media = [
+            types.InputMediaPhoto(media=photo_id, caption=text)
+            for photo_id in photos
+        ]
 
         # Send notification to the admin
-        await bot.send_photo(group_admin_chat_id, product.image, caption=text)
+        await bot.send_media_group(group_admin_chat_id, media=media, )
+        await bot.send_message(group_admin_chat_id, text=text)
         await message.answer(texts[language]['order_confirmation'])
         await message.answer(texts[language]['admin_contact'], reply_markup=keyboard)
         await state.clear()  # Clear the state

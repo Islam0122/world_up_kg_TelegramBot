@@ -39,7 +39,11 @@ class AddProduct(StatesGroup):
     gender = State()
     size = State()
     price = State()
-    image = State()
+    image1 = State()
+    image2 = State()
+    image3 = State()
+    image4 = State()
+
 
     product_for_change = None
 
@@ -247,7 +251,7 @@ async def add_price(message: types.Message, state: FSMContext):
 
     else:
         await message.answer("🖼️ Отлично! Теперь загрузите изображение :", reply_markup=keyboard)
-    await state.set_state(AddProduct.image)
+    await state.set_state(AddProduct.image1)
 
 
 @add_product_router.message(AddProduct.price)
@@ -256,21 +260,78 @@ async def add_price2(message: types.Message, state: FSMContext):
                          )
 
 
-@add_product_router.message(AddProduct.image, or_f(F.photo, F.text == "."))
-async def add_image(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
+@add_product_router.message(AddProduct.image1, or_f(F.photo, F.text == "."))
+async def add_image1(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
     if message.text and message.text == "." and AddProduct.product_for_change:
-        await state.update_data(image=AddProduct.product_for_change.image)
+        await state.update_data(image1=AddProduct.product_for_change.image1)
 
     elif message.photo:
-        await state.update_data(image=message.photo[-1].file_id)
+        await state.update_data(image1=message.photo[-1].file_id)
+        await message.answer("🖼️ Отлично! Теперь загрузите изображение 2:", reply_markup=keyboard)
+        await state.set_state(AddProduct.image2)
     else:
         await message.answer("Отправьте фото ")
         return
+
+@add_product_router.message(AddProduct.image1)
+async def add_image1(message: types.Message, state: FSMContext):
+    await message.answer("❌ Ошибка при загрузке изображения. Пожалуйста, отправьте изображение.")
+
+@add_product_router.message(AddProduct.image2, or_f(F.photo, F.text == "."))
+async def add_image2(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
+    if message.text and message.text == "." and AddProduct.product_for_change:
+            await state.update_data(image2=AddProduct.product_for_change.image2)
+
+    elif message.photo:
+            await state.update_data(image2=message.photo[-1].file_id)
+            await message.answer("🖼️ Отлично! Теперь загрузите изображение 3:", reply_markup=keyboard)
+            await state.set_state(AddProduct.image3)
+    else:
+            await message.answer("Отправьте фото ")
+            return
+
+@add_product_router.message(AddProduct.image2)
+async def add_image2(message: types.Message, state: FSMContext):
+    await message.answer("❌ Ошибка при загрузке изображения. Пожалуйста, отправьте изображение.")
+
+@add_product_router.message(AddProduct.image3, or_f(F.photo, F.text == "."))
+async def add_image3(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
+    if message.text and message.text == "." and AddProduct.product_for_change:
+            await state.update_data(image3=AddProduct.product_for_change.image3)
+
+    elif message.photo:
+            await state.update_data(image3=message.photo[-1].file_id)
+            await message.answer("🖼️ Отлично! Теперь загрузите изображение 4:", reply_markup=keyboard)
+            await state.set_state(AddProduct.image4)
+    else:
+            await message.answer("Отправьте фото ")
+            return
+
+@add_product_router.message(AddProduct.image3)
+async def add_image3(message: types.Message, state: FSMContext):
+    await message.answer("❌ Ошибка при загрузке изображения. Пожалуйста, отправьте изображение.")
+
+@add_product_router.message(AddProduct.image4, or_f(F.photo, F.text == "."))
+async def add_image4(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
+    if message.text and message.text == "." and AddProduct.product_for_change:
+        await state.update_data(image4=AddProduct.product_for_change.image4)
+
+    elif message.photo:
+            await state.update_data(image4=message.photo[-1].file_id)
+    else:
+            await message.answer("Отправьте фото ")
+            return
     data = await state.get_data()
     keyboard = ReplyKeyboardRemove()
+    photos = [
+        data['image1'],
+        data['image2'],
+        data['image3'],
+        data['image4']
+    ]
 
-    try:
-        if AddProduct.product_for_change:
+    if AddProduct.product_for_change:
+            print(f'{data}')
             await orm_update_product(session, AddProduct.product_for_change.id, data)
             if data['section'].lower() == 'другие':
                 size_info = ""  # If section is "Другие", size info is not displayed
@@ -288,13 +349,15 @@ async def add_image(message: types.Message, state: FSMContext, session: AsyncSes
                 f"{size_info}"  # Insert size information if available
                 f"<b>💰 Цена:</b> {data['price']}\n\n"
             )
-
-            # Send the notification to the admin group chat
-            await bot.send_photo(group_admin_chat_id, data['image'], caption=text)
+            media = [types.InputMediaPhoto(media=photo_id, caption=text) for photo_id in photos]
+            #
+            # # Send the notification to the admin group chat
+            await bot.send_media_group(group_admin_chat_id, media=media)
+            await bot.send_message(group_admin_chat_id,text=text)
 
             # Notify the user of the successful operation
             await message.answer("✅ Успешно изменен!", reply_markup=keyboard)
-        else:
+    else:
             await orm_add_product(session, data)
 
             if data['section'].lower() == 'другие':
@@ -303,36 +366,39 @@ async def add_image(message: types.Message, state: FSMContext, session: AsyncSes
                 size_info = f"<b>📏 Размер:</b> {data['size']}\n"
 
                 # Construct the message text
+
             text = (
                 "<b>📦 Новый продукт добавлен в каталог!</b>\n"
                 f"<b>🏷 Название:</b> {data['name']}\n"
                 f"<b>📝 Описание:</b> {data['description']}\n"
                 f"<b>🔍 Раздел:</b> {data['section']}\n"
                 f"<b>📦 Категория:</b> {data['category']}\n"
-                f"<b>👤 Пол:</b> {data['gender']}\n"
+                f"<b>👤 Тип :</b> {data['gender']}\n"
                 f"{size_info}"  # Insert size information if available
                 f"<b>💰 Цена:</b> {data['price']}\n\n"
             )
+            media = [types.InputMediaPhoto(media=photo_id, caption=text) for photo_id in photos]
 
             # Send the notification to the admin group chat
-            await bot.send_photo(group_admin_chat_id, data['image'], caption=text)
-            # Send the notification to the user chat
-            await bot.send_photo(chat_id, data['image'], caption=text)
+            # await bot.send_photo(group_admin_chat_id, data['image'], caption=text)
+            await bot.send_media_group(group_admin_chat_id, media=media, )
+            await bot.send_message(group_admin_chat_id,text=text)
+            # # Send the notification to the user chaу
+            await bot.send_media_group(chat_id, media=media,)
+            await bot.send_message(chat_id, text=text)
 
             # Notify the user of the successful operation
             await message.answer("✅ Успешно добавлен!", reply_markup=keyboard)
 
-        await state.clear()
-    except Exception as e:
-        print(e)
-        await state.clear()
-
-    AddProduct.product_for_change = None
+    await state.clear()
 
 
-@add_product_router.message(AddProduct.image)
+
+@add_product_router.message(AddProduct.image4)
 async def add_image2(message: types.Message, state: FSMContext):
     await message.answer("❌ Ошибка при загрузке изображения. Пожалуйста, отправьте изображение.")
+
+
 
 
 # -------------------------> Del product <-------------------------------------------------------------

@@ -64,7 +64,7 @@ async def back_handler(message: types.Message, state: FSMContext) -> None:
                 f"{texts[language]['back_to_previous_step']}\n"
                 f"{texts[language][f'OrderState:{previous.state.split(':')[1]}']}",
             )
-            return
+
         previous = step
     if current_state == AddProduct.name:
         await message.answer(
@@ -112,9 +112,18 @@ async def back_handler(message: types.Message, state: FSMContext) -> None:
         await message.answer("Для какого  предназначен товар:",
                              reply_markup=get_gender_keyboard())
         await state.set_state(AddProduct.gender)
-    if current_state == AddProduct.image:
+    if current_state == AddProduct.image1:
         await message.answer("💬 Отлично! Теперь введите стоимость:", reply_markup=keyboard)
         await state.set_state(AddProduct.price)
+    if current_state == AddProduct.image2:
+        await message.answer("🖼️ Отлично! Теперь загрузите изображение:", reply_markup=keyboard)
+        await state.set_state(AddProduct.image1)
+    if current_state == AddProduct.image3:
+        await message.answer("🖼️ Отлично! Теперь загрузите изображение 2:", reply_markup=keyboard)
+        await state.set_state(AddProduct.image2)
+    if current_state == AddProduct.image4:
+            await message.answer("🖼️ Отлично! Теперь загрузите изображение 3:", reply_markup=keyboard)
+            await state.set_state(AddProduct.image3)
 
 unknown_2private_router = Router()
 unknown_2private_router.message.filter(ChatTypeFilter(['private']))

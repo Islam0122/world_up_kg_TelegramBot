@@ -30,7 +30,6 @@ def get_sections_keyboard(language):
 
 category_texts = {
     'ru': {
-
         'clothing': {
             'футболки': 'Футболки',
             'штаны': 'Штаны',
@@ -57,12 +56,12 @@ category_texts = {
     },
     'en': {
         'clothing': {
-            'кофты': 'Sweaters',
-            'лонгсливы': 'Long sleeves',
-            'худи': 'Hoodies',
             'футболки': 'T-shirts',
             'штаны': 'Pants',
             'куртки': 'Jackets',
+            'худи': 'Hoodies',
+            'лонгсливы': 'Long sleeves',
+            'кофты': 'Sweaters',
             'шорты': 'Shorts'
         },
         'footwear': {
@@ -80,6 +79,7 @@ category_texts = {
             'спорттовары': 'Sport goods'
         }
     }
+
 }
 
 

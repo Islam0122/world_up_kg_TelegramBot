@@ -31,22 +31,24 @@ messages = {
     'ru': {
         'search_instruction': (
             "Введите запрос для поиска товара. Например, чтобы найти товар, "
-            "используйте команду /search и укажите название товара, его ID или цену.\n\n"
+            "используйте команду /search и укажите название товара, его ID, цену или категорию.\n\n"
             "Пример использования:\n"
             "/search Ноутбук 🖥️\n"
             "/search 1234 🆔\n"
-            "/search 1000 💰"
+            "/search 1000 💰\n"
+            "/search Одежда 👗"
         ),
         'no_results': "По запросу '{query}' ничего не найдено.",
     },
     'en': {
         'search_instruction': (
             "Enter a query to search for a product. For example, to find a product, "
-            "use the /search command and specify the product name, its ID, or price.\n\n"
+            "use the /search command and specify the product name, its ID, price, or category.\n\n"
             "Example usage:\n"
             "/search Laptop 🖥️\n"
             "/search 1234 🆔\n"
-            "/search 1000 💰"
+            "/search 1000 💰\n"
+            "/search Clothing 👗"
         ),
         'no_results': "No results found for '{query}'.",
     }
@@ -71,7 +73,7 @@ async def search_command(message: types.Message, session: AsyncSession):
             for product in search_results:
                 # Переводим нужные поля продукта, если язык интерфейса английский
                 if language == 'en':
-                    product_name = translator.translate(product.name, src='ru', dest='en').text
+                    product_name = product.name
                     product_description = translator.translate(product.description, src='ru', dest='en').text
                     section = translator.translate(product.section, src='ru', dest='en').text
                     category = translator.translate(product.category, src='ru', dest='en').text
@@ -97,16 +99,28 @@ async def search_command(message: types.Message, session: AsyncSession):
                     f"{size_info}"
                     f"<b>{texts['price']}</b> {price}\n"
                 )
+                photos = [
+                    product.image1,
+                    product.image2,
+                    product.image3,
+                    product.image4,
+                ]
+                media = [
+                    types.InputMediaPhoto(media=photo_id, caption=description_text)
+                    for photo_id in photos
+                ]
 
-                await message.answer_photo(
-                    product.image,
-                    caption=description_text,
+                # Send the media group with captions
+                await message.answer_media_group(
+                    media=media,
+                )
+                await message.answer(description_text,
                     reply_markup=get_callback_btns(
                         btns={
                             f"{texts['buy']} {product_name}": f"buy_{product.id}"
                         }
-                    ),
-                )
+                    ))
+
         else:
             no_results_message = messages[language]['no_results'].format(query=query)
             await message.reply(no_results_message)

@@ -1,6 +1,6 @@
 import asyncio
 import random
-from aiogram import F, Router, types
+from aiogram import F, Router, types, Bot
 from aiogram.filters import Command
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
@@ -122,6 +122,7 @@ async def send_random_products(message: types.Message, session: AsyncSession, la
             gender = product.gender
             price = str(product.price)
 
+
         size_info = f"<b>{texts['size']}</b> {product.size}\n" if product.section.lower() != 'другие' else ""
 
         description_text = (
@@ -143,9 +144,20 @@ async def send_random_products(message: types.Message, session: AsyncSession, la
                 ]
             ]
         )
+        photos = [
+            product.image1,
+            product.image2,
+            product.image3,
+            product.image4,
+        ]
+        media = [
+            types.InputMediaPhoto(media=photo_id, caption=description_text)
+            for photo_id in photos
+        ]
 
-        await message.answer_photo(
-            product.image,
-            caption=description_text,
-            reply_markup=inline_kb
+        # Send the media group with captions
+        await message.answer_media_group(
+            media=media,
+            reply_markup=inline_kb,
         )
+        await message.answer(description_text,reply_markup=inline_kb,)

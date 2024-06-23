@@ -11,7 +11,12 @@ class Product(Base):
     __tablename__ = 'product'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    image: Mapped[str] = mapped_column(String(150))
+
+    image1: Mapped[str] = mapped_column(String(150))
+    image2: Mapped[str] = mapped_column(String(150))
+    image3: Mapped[str] = mapped_column(String(150))
+    image4: Mapped[str] = mapped_column(String(150))
+
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str] = mapped_column(Text)
     section: Mapped[str] = mapped_column(String(150), nullable=False)
@@ -19,6 +24,7 @@ class Product(Base):
     gender: Mapped[str] = mapped_column(String(150), nullable=False)
     size: Mapped[str] = mapped_column(String(150), nullable=False)
     price: Mapped[str] = mapped_column(String(150), nullable=False)
+
 
 
 # ------------------> info <--------------------

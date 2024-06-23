@@ -46,10 +46,22 @@ async def search_command(message: types.Message, session: AsyncSession):
                     f"{size_info}"  # Вставляем информацию о размере
                     f"<b>💰 Цена:</b> {product.price}\n"
                 )
+                photos = [
+                    product.image1,
+                    product.image2,
+                    product.image3,
+                    product.image4,
+                ]
+                media = [
+                    types.InputMediaPhoto(media=photo_id, caption=description_text)
+                    for photo_id in photos
+                ]
 
-                await message.answer_photo(
-                    product.image,
-                    caption=description_text,
+                # Send the media group with captions
+                await message.answer_media_group(
+                    media=media,
+                )
+                await message.answer(description_text,
                     reply_markup=get_callback_btns(
                         btns={
                             "Удалить": f"delete_{product.id}",

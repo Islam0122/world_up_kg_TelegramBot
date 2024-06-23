@@ -193,12 +193,21 @@ async def process_gender_choice(callback_query: types.CallbackQuery, state: FSMC
             # Adjust based on the section
             price=price,
         )
+        photos = [
+            product.image1,
+            product.image2,
+            product.image3,
+            product.image4,
+        ]
+        media = [
+            types.InputMediaPhoto(media=photo_id, caption=description_text)
+            for photo_id in photos
+        ]
 
-        await callback_query.message.answer_photo(
-            product.image,
-            caption=description_text,
-            parse_mode="HTML",
-            reply_markup=get_callback_btns(btns={"Купить": f"buy_{product.id}"}),
+        # Send the media group with captions
+        await callback_query.message.answer_media_group(
+            media=media,
         )
+        await callback_query.message.answer(description_text )
 
     await state.clear()
