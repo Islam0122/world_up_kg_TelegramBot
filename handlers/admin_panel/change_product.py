@@ -152,7 +152,7 @@ async def get_category(message: types.Message, state: FSMContext):
     else:
         await state.update_data(category=category)
     # Дальнейшие действия в зависимости от выбранной категории
-    if category in ["кофты", "лонгсливы", "футболки", "худи", "куртки", "штаны", "шорты"]:
+    if category in ["кофты", "лонгсливы", "футболка", "худи", "куртки", "штаны", "шорты"]:
         await message.answer("Выберите размер:",
                              reply_markup=get_sizes_clothing_keyboard())
         await state.set_state(AddProduct.size)

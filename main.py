@@ -33,8 +33,11 @@ from handlers.user_panel.start_functions import user_private_router
 from common.bot_cmds_list import private
 
 # ALLOWED_UPDATES = ['message', 'edited_message', 'callback_query',]
+from aiogram.client.session.aiohttp import AiohttpSession
 
-bot = Bot(token=os.getenv('TOKEN'), parse_mode=ParseMode.HTML)
+session = AiohttpSession(proxy="http://proxy.server:3128")
+
+bot = Bot(token=os.getenv('TOKEN'),parse_mode=ParseMode.HTML)
 bot.my_admins_list = [5627082052, 974193106, ]
 
 dp = Dispatcher()

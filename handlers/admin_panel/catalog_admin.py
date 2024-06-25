@@ -2,85 +2,59 @@ from aiogram import F, Router, types
 from aiogram.filters import Command, StateFilter, or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, \
+    ReplyKeyboardRemove
 from filter.chat_types import ChatTypeFilter, IsAdmin
+from handlers.user_panel.keyboards import *
+from handlers.user_panel.search_functions import translator
+from handlers.user_panel.start_functions import user_preferences
 from keyboard_list.reply import get_keyboard
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.model import Product
 from database.orm_query import orm_add_product, orm_delete_product, orm_get_product, orm_update_product
 
 from database.orm_query import orm_get_products
-from keyboard_list.inline import *
-from aiogram import types, Dispatcher
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, InlineKeyboardButton, \
-    InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from keyboard_list.inline import get_callback_btns
+
+texts = {
+    'ru': {
+        'choose_section': "Выберите раздел, в котором вы ищете товар:",
+        'choose_category': "Выберите категорию товара:",
+        'choose_size': "Выберите размер товара:",
+        'choose_gender': "Выберите пол товара:",
+        'no_products_found': "По вашему запросу нет товаров.",
+        'product_details': (
+            "<b>🆔 ID:</b> {id}\n"
+            "<b>🏷 Название:</b> {name}\n"
+            "<b>📝 Описание:</b> {description}\n"
+            "<b>🔍 Раздел:</b> {section}\n"
+            "<b>📦 Категория:</b> {category}\n"
+            "<b>👤 Тип:</b> {gender}\n"
+            "{size_info}"
+            "<b>💰 Цена:</b> {price}\n"
+        ),
+    },
+    'en': {
+        'choose_section': "Choose the section in which you are looking for a product:",
+        'choose_category': "Choose the product category:",
+        'choose_size': "Choose the product size:",
+        'choose_gender': "Choose the product gender:",
+        'no_products_found': "No products found for your request.",
+        'product_details': (
+            "<b>🆔 ID:</b> {id}\n"
+            "<b>🏷 Name:</b> {name}\n"
+            "<b>📝 Description:</b> {description}\n"
+            "<b>🔍 Section:</b> {section}\n"
+            "<b>📦 Category:</b> {category}\n"
+            "<b>👤 Gender:</b> {gender}\n"
+            "{size_info}"
+            "<b>💰 Price:</b> {price}\n"
+        ),
+    }
+}
 
 
 
-def get_sections_keyboard():
-    keyboard = InlineKeyboardBuilder() # Add row_width to organize buttons in a single column
-    keyboard.add(
-        InlineKeyboardButton(text="Одежда", callback_data="section_Одежда"),
-        InlineKeyboardButton(text="Обувь", callback_data="section_Обувь"),
-        InlineKeyboardButton(text="Другие", callback_data="section_Другие"),
-    )
-    return keyboard.adjust().as_markup()
-
-def get_categories_keyboard(section):
-    keyboard =  InlineKeyboardBuilder()
-    if section == "одежда" or section == "Одежда":
-        keyboard.add(
-            InlineKeyboardButton(text="Кофты", callback_data="category_кофты"),  # Outerwear
-            InlineKeyboardButton(text="Лонгсливы", callback_data="category_лонгсливы"),  # Long sleeves
-            InlineKeyboardButton(text="Худи", callback_data="category_худи"),  # Hoodies
-            InlineKeyboardButton(text="Футболки", callback_data="category_футболки"),  # T-shirts
-            InlineKeyboardButton(text="Штаны", callback_data="category_штаны"),  # Pants
-            InlineKeyboardButton(text="Куртки", callback_data="category_куртки"),  # Jackets
-            InlineKeyboardButton(text="Шорты", callback_data="category_шорты"),  # Shorts
-        )
-
-    elif section == "Обувь" or section == "обувь":
-        keyboard.add(
-            InlineKeyboardButton(text="Кроссовки", callback_data="category_кроссовки"),
-            InlineKeyboardButton(text="Ботинки", callback_data="category_ботинки"),
-            InlineKeyboardButton(text="Сандалии", callback_data="category_сандалии"),
-            InlineKeyboardButton(text="Туфли", callback_data="category_туфли"),
-            InlineKeyboardButton(text="Сапоги", callback_data="category_сапоги"),
-        )
-    else:
-        keyboard.add(
-            InlineKeyboardButton(text="Электроника", callback_data="category_электроника"),
-            InlineKeyboardButton(text="Книги", callback_data="category_книги"),
-            InlineKeyboardButton(text="Аксессуары", callback_data="category_аксессуары"),
-            InlineKeyboardButton(text="Игрушки", callback_data="category_игрушки"),
-            InlineKeyboardButton(text="Спорттовары", callback_data="category_спорттовары"),
-
-        )
-
-    return keyboard.adjust(3,3).as_markup()
-
-def get_sizes_keyboard(section):
-    keyboard = InlineKeyboardBuilder()
-    if section == "одежда" or section == "Одежда":
-        sizes = ["XS", "S", "M", "L", "XL", "XXL"]
-        for size in sizes:
-            keyboard.add(InlineKeyboardButton(text=size, callback_data=f"size_{size}"))
-    else:
-        sizes = ["35", "36", "37", "37,5-38", "38,5-39", "39", "39,5-40", "40", "40-40,5", "40,5-41",
-         "41,5-42", "42", "42,5-43", "43", "43-44", "44-45", "45", "45-46", "46", "46-47"]
-        for size in sizes:
-              keyboard.add(InlineKeyboardButton(text=size, callback_data=f"size_{size}"))
-    return keyboard.adjust(5, 5).as_markup()
-
-def get_genders_keyboard():
-    keyboard = InlineKeyboardBuilder()
-    keyboard.add(
-        InlineKeyboardButton(text="Мужской", callback_data="gender_Мужской"),
-        InlineKeyboardButton(text="Женская", callback_data="gender_Женская"),
-        InlineKeyboardButton(text="Для всех", callback_data="gender_Для всех")
-    )
-    return keyboard.adjust(3,3).as_markup()
 catalog_admin_router = Router()
 catalog_admin_router.message.filter(ChatTypeFilter(["private"]), IsAdmin())
 
@@ -106,11 +80,13 @@ def filter_products(products, filters):
 @catalog_admin_router.message(F.text.lower() == "🛍️ Каталог товаров")
 @catalog_admin_router.message(Command("catalog_admin"))
 async def start_catalog_filtering(message: types.Message, state: FSMContext):
+    user_id = message.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
     await message.answer_photo(
         photo=types.FSInputFile('media/images/scale_1200.png'),
         caption="Выберите раздел, в котором вы ищете товар:",
         parse_mode="HTML",
-        reply_markup=get_sections_keyboard()
+        reply_markup=get_sections_keyboard(language)
     )
 
     await state.set_state(AdminCatalogFilters.SECTION)
@@ -118,51 +94,62 @@ async def start_catalog_filtering(message: types.Message, state: FSMContext):
 
 @catalog_admin_router.callback_query((F.data.startswith("admin_catalog")))
 async def start_catalog_filtering(callback_query: types.CallbackQuery, state: FSMContext):
-    message = callback_query.message
-    await message.answer_photo(
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    await callback_query.message.answer_photo(
         photo=types.FSInputFile('media/images/scale_1200.png'),
-        caption="Выберите раздел, в котором вы ищете товар:",
+        caption=texts[language]['choose_section'],
         parse_mode="HTML",
-        reply_markup=get_sections_keyboard()
+        reply_markup=get_sections_keyboard(language)
     )
-
     await state.set_state(AdminCatalogFilters.SECTION)
 
 
 @catalog_admin_router.callback_query(AdminCatalogFilters.SECTION, F.data.startswith("section_"))
-async def process_section_choice(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+async def process_section_choice(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
-
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
     selected_section = callback_query.data.split('_')[1]
 
     await state.update_data(section=selected_section)
     await state.set_state(AdminCatalogFilters.CATEGORY)
     data = await state.get_data()
-    await callback_query.message.answer("Выберите категорию товара:",
-                                        reply_markup=get_categories_keyboard(data['section']))
-
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_category'],
+        reply_markup=get_categories_keyboard(data['section'], language)
+    )
 
 @catalog_admin_router.callback_query(AdminCatalogFilters.CATEGORY, F.data.startswith("category_"))
-async def process_category_choice(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+async def process_category_choice(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
     selected_category = callback_query.data.split('_')[1]
     await state.update_data(category=selected_category)
-    await state.set_state(AdminCatalogFilters.CATEGORY)
     data = await state.get_data()
-    if data['section'] == 'другие' or data['section'] == 'Другие':
+    if data['section'] in ['другие', 'Другие']:
         await state.set_state(AdminCatalogFilters.GENDER)
-        await callback_query.message.answer("Выберите тип товара:", reply_markup=get_genders_keyboard())
+        await callback_query.message.edit_caption(caption=texts[language]['choose_gender'],
+                                            reply_markup=get_genders_keyboard(language))
     else:
         await state.set_state(AdminCatalogFilters.SIZE)
-        await callback_query.message.answer("Выберите размер товара:", reply_markup=get_sizes_keyboard(data['section']))
+        await callback_query.message.edit_caption(caption=texts[language]['choose_size'],
+                                            reply_markup=get_sizes_keyboard(data['section'], language))
 
 
 @catalog_admin_router.callback_query(AdminCatalogFilters.SIZE, F.data.startswith("size_"))
-async def process_size_choice(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+async def process_size_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
     selected_size = callback_query.data.split('_')[1]
     await state.update_data(size=selected_size)
     await state.set_state(AdminCatalogFilters.GENDER)
-    await callback_query.message.answer("Выберите пол товара:", reply_markup=get_genders_keyboard())
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_gender'],
+        reply_markup=get_genders_keyboard(language)
+    )
 
 
 @catalog_admin_router.callback_query(AdminCatalogFilters.GENDER, F.data.startswith("gender_"))
@@ -226,3 +213,48 @@ async def process_gender_choice(callback_query: types.CallbackQuery, state: FSMC
         await state.clear()
     await message.answer("ОК, вот список товаров ⏫")
 
+@catalog_admin_router.callback_query(F.data == "back_section")
+async def back_to_sections(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    await state.set_state(AdminCatalogFilters.SECTION)
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_section'],
+        reply_markup=get_sections_keyboard(language)
+    )
+
+
+@catalog_admin_router.callback_query(F.data == "back_category")
+async def back_to_categories(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    data = await state.get_data()
+    await state.set_state(AdminCatalogFilters.CATEGORY)
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_category'],
+        reply_markup=get_categories_keyboard(data['section'], language)
+    )
+
+
+@catalog_admin_router.callback_query(F.data == "back_size")
+async def back_to_sizes(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    data = await state.get_data()
+    selected_section = data.get('section', '').lower()
+
+    if selected_section in ['другие', 'others']:
+        await state.set_state(AdminCatalogFilters.CATEGORY)
+        await callback_query.message.edit_caption(
+            caption=texts[language]['choose_category'],
+            reply_markup=get_categories_keyboard(selected_section, language)
+        )
+    else:
+        await state.set_state(AdminCatalogFilters.SIZE)
+        await callback_query.message.edit_caption(
+            caption=texts[language]['choose_size'],
+            reply_markup=get_sizes_keyboard(selected_section, language)
+        )

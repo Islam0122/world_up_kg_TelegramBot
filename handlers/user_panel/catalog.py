@@ -63,6 +63,8 @@ class CatalogFilters(StatesGroup):
     CATEGORY = State()
     SIZE = State()
     GENDER = State()
+    RETURN = State()  # State for returning back to the previous question
+
 
 
 
@@ -95,7 +97,7 @@ async def start_catalog_filtering(callback_query: types.CallbackQuery, state: FS
 
 
 @catalog_router.callback_query(CatalogFilters.SECTION, F.data.startswith("section_"))
-async def process_section_choice(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+async def process_section_choice(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
     user_id = callback_query.from_user.id
     language = user_preferences.get(user_id, {}).get('language', 'ru')
@@ -104,36 +106,43 @@ async def process_section_choice(callback_query: types.CallbackQuery, state: FSM
     await state.update_data(section=selected_section)
     await state.set_state(CatalogFilters.CATEGORY)
     data = await state.get_data()
-    await callback_query.message.answer(texts[language]['choose_category'],
-                                        reply_markup=get_categories_keyboard(data['section'],language))
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_category'],
+        reply_markup=get_categories_keyboard(data['section'], language)
+    )
 
 
 @catalog_router.callback_query(CatalogFilters.CATEGORY, F.data.startswith("category_"))
-async def process_category_choice(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+async def process_category_choice(callback_query: types.CallbackQuery, state: FSMContext):
     await callback_query.answer()
     user_id = callback_query.from_user.id
     language = user_preferences.get(user_id, {}).get('language', 'ru')
     selected_category = callback_query.data.split('_')[1]
     await state.update_data(category=selected_category)
-    await state.set_state(CatalogFilters.CATEGORY)
     data = await state.get_data()
     if data['section'] in ['другие', 'Другие']:
         await state.set_state(CatalogFilters.GENDER)
-        await callback_query.message.answer(texts[language]['choose_gender'], reply_markup=get_genders_keyboard(language))
+        await callback_query.message.edit_caption(caption=texts[language]['choose_gender'],
+                                            reply_markup=get_genders_keyboard(language))
     else:
         await state.set_state(CatalogFilters.SIZE)
-        await callback_query.message.answer(texts[language]['choose_size'], reply_markup=get_sizes_keyboard(data['section'],language))
+        await callback_query.message.edit_caption(caption=texts[language]['choose_size'],
+                                            reply_markup=get_sizes_keyboard(data['section'], language))
+
 
 
 @catalog_router.callback_query(CatalogFilters.SIZE, F.data.startswith("size_"))
-async def process_size_choice(callback_query: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+async def process_size_choice(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
     user_id = callback_query.from_user.id
     language = user_preferences.get(user_id, {}).get('language', 'ru')
     selected_size = callback_query.data.split('_')[1]
     await state.update_data(size=selected_size)
     await state.set_state(CatalogFilters.GENDER)
-    await callback_query.message.answer(texts[language]['choose_gender'], reply_markup=get_genders_keyboard(language))
-
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_gender'],
+        reply_markup=get_genders_keyboard(language)
+    )
 
 def filter_products(products, filters):
     filtered_products = []
@@ -211,3 +220,50 @@ async def process_gender_choice(callback_query: types.CallbackQuery, state: FSMC
         await callback_query.message.answer(description_text )
 
     await state.clear()
+
+@catalog_router.callback_query(F.data == "back_section")
+async def back_to_sections(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    await state.set_state(CatalogFilters.SECTION)
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_section'],
+        reply_markup=get_sections_keyboard(language)
+    )
+
+
+@catalog_router.callback_query(F.data == "back_category")
+async def back_to_categories(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    data = await state.get_data()
+    await state.set_state(CatalogFilters.CATEGORY)
+    await callback_query.message.edit_caption(
+        caption=texts[language]['choose_category'],
+        reply_markup=get_categories_keyboard(data['section'], language)
+    )
+
+
+@catalog_router.callback_query(F.data == "back_size")
+async def back_to_sizes(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    user_id = callback_query.from_user.id
+    language = user_preferences.get(user_id, {}).get('language', 'ru')
+    data = await state.get_data()
+    selected_section = data.get('section', '').lower()
+
+    if selected_section in ['другие', 'others']:
+        await state.set_state(CatalogFilters.CATEGORY)
+        await callback_query.message.edit_caption(
+            caption=texts[language]['choose_category'],
+            reply_markup=get_categories_keyboard(selected_section, language)
+        )
+    else:
+        await state.set_state(CatalogFilters.SIZE)
+        await callback_query.message.edit_caption(
+            caption=texts[language]['choose_size'],
+            reply_markup=get_sizes_keyboard(selected_section, language)
+        )
+

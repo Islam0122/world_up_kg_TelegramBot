@@ -31,7 +31,7 @@ def get_sections_keyboard(language):
 category_texts = {
     'ru': {
         'clothing': {
-            'футболки': 'Футболки',
+            'футболка': 'Футболка',
             'штаны': 'Штаны',
             'куртки': 'Куртки',
             'худи': 'Худи',
@@ -56,7 +56,7 @@ category_texts = {
     },
     'en': {
         'clothing': {
-            'футболки': 'T-shirts',
+            'футболка': 'T-shirts',
             'штаны': 'Pants',
             'куртки': 'Jackets',
             'худи': 'Hoodies',
@@ -75,7 +75,7 @@ category_texts = {
             'электроника': 'Electronics',
             'книги': 'Books',
             'аксессуары': 'Accessories',
-            'игрушки': 'Toys',
+            'игрушка': 'Toys',
             'спорттовары': 'Sport goods'
         }
     }
@@ -94,12 +94,13 @@ def get_categories_keyboard(section, language):
     elif section.lower() == "обувь":
         for key, value in category_texts[language]['footwear'].items():
             keyboard.add(InlineKeyboardButton(text=value, callback_data=f"category_{key}"))
-
     else:
         for key, value in category_texts[language]['others'].items():
             keyboard.add(InlineKeyboardButton(text=value, callback_data=f"category_{key}"))
 
-    return keyboard.adjust(2).as_markup()  # Adjust buttons to display in a suitable layout
+    keyboard.add(InlineKeyboardButton(text="↩️", callback_data="back_section"))
+
+    return keyboard.adjust(3).as_markup()  # Adjust buttons to display in a suitable layout
 
 
 size_texts = {
@@ -128,8 +129,6 @@ gender_texts = {
     }
 }
 
-
-# Function to generate sizes keyboard based on the user's language preference and section
 def get_sizes_keyboard(section, language):
     keyboard = InlineKeyboardBuilder()
 
@@ -141,10 +140,11 @@ def get_sizes_keyboard(section, language):
     for size in sizes:
         keyboard.add(InlineKeyboardButton(text=size, callback_data=f"size_{size}"))
 
+    keyboard.add(InlineKeyboardButton(text="↩️", callback_data="back_category"))
     return keyboard.adjust(5).as_markup()  # Adjust buttons to display in a suitable layout
 
-
 # Function to generate genders keyboard based on the user's language preference
+
 def get_genders_keyboard(language):
     keyboard = InlineKeyboardBuilder()
 
@@ -153,5 +153,5 @@ def get_genders_keyboard(language):
         InlineKeyboardButton(text=gender_texts[language]['female'], callback_data="gender_Женская"),
         InlineKeyboardButton(text=gender_texts[language]['unisex'], callback_data="gender_Для всех")
     )
-
+    keyboard.add(InlineKeyboardButton(text="↩️", callback_data="back_size"))
     return keyboard.adjust(3).as_markup()

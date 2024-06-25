@@ -62,7 +62,7 @@ async def back_handler(message: types.Message, state: FSMContext) -> None:
             await state.set_state(previous)
             await message.answer(
                 f"{texts[language]['back_to_previous_step']}\n"
-                f"{texts[language][f'OrderState:{previous.state.split(':')[1]}']}",
+                f"{texts[language]['OrderState:{}'.format(previous.state.split(':')[1])]}"
             )
 
         previous = step

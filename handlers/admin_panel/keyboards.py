@@ -28,7 +28,7 @@ def get_categories_clothing_keyboard():
         keyboard=[
             [
                 KeyboardButton(text="Кофты"), KeyboardButton(text="Лонгсливы"),  # Long sleeves
-                KeyboardButton(text="Худи"), KeyboardButton(text="Футболки")
+                KeyboardButton(text="Худи"), KeyboardButton(text="Футболка")
             ],
             [
                 KeyboardButton(text="Штаны"),  # Pants
