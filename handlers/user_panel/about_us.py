@@ -25,7 +25,6 @@ about_texts = {
         'contacts': (
             "📞 Телефон: +123456789\n"
             "📧 Email: example@example.com\n"
-            "🌐 Веб-сайт: [Название вашего сайта](http://www.example.com)\n"
             "🏢 Адрес: ул. Примерная, д. 123, г. Примерный\n"
         )
     },
@@ -42,7 +41,6 @@ about_texts = {
         'contacts': (
             "📞 Phone: +123456789\n"
             "📧 Email: example@example.com\n"
-            "🌐 Website: [Your Website Name](http://www.example.com)\n"
             "🏢 Address: 123 Example St, Example City\n"
         )
     }

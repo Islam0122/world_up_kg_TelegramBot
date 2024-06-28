@@ -34,6 +34,8 @@ texts = {
             "{size_info}"
             "<b>💰 Цена:</b> {price}\n"
         ),
+        'buy': 'Купить',
+
     },
     'en': {
         'choose_section': "Choose the section in which you are looking for a product:",
@@ -51,6 +53,8 @@ texts = {
             "{size_info}"
             "<b>💰 Price:</b> {price}\n"
         ),
+        'buy': 'Buy',
+
     }
 }
 
@@ -217,7 +221,12 @@ async def process_gender_choice(callback_query: types.CallbackQuery, state: FSMC
         await callback_query.message.answer_media_group(
             media=media,
         )
-        await callback_query.message.answer(description_text )
+        await callback_query.message.answer(description_text,
+                             reply_markup=get_callback_btns(
+                                 btns={
+                                     f"{texts[language]['buy']} {product_name}": f"buy_{product.id}"
+                                 }
+                             ))
 
     await state.clear()
 
