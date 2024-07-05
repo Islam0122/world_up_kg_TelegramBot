@@ -209,6 +209,8 @@ async def get_type(message: types.Message, state: FSMContext):
 
     if message.text == ".":
         await state.update_data(gender=AddProduct.product_for_change.gender)
+        await message.answer("💬 Отлично! Теперь введите стоимость:", reply_markup=keyboard)
+        await state.set_state(AddProduct.price)
     if data['category'] in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"] and gender.lower() in ["Мужской","Женская","Для всех",]:
         keyboardфы = ReplyKeyboardMarkup(
             keyboard=[
@@ -264,6 +266,8 @@ async def add_price2(message: types.Message, state: FSMContext):
 async def add_image1(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
     if message.text and message.text == "." and AddProduct.product_for_change:
         await state.update_data(image1=AddProduct.product_for_change.image1)
+        await message.answer("🖼️ Отлично! Теперь загрузите изображение 2:", reply_markup=keyboard)
+        await state.set_state(AddProduct.image2)
 
     elif message.photo:
         await state.update_data(image1=message.photo[-1].file_id)
@@ -281,6 +285,8 @@ async def add_image1(message: types.Message, state: FSMContext):
 async def add_image2(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
     if message.text and message.text == "." and AddProduct.product_for_change:
             await state.update_data(image2=AddProduct.product_for_change.image2)
+            await message.answer("🖼️ Отлично! Теперь загрузите изображение 3:", reply_markup=keyboard)
+            await state.set_state(AddProduct.image3)
 
     elif message.photo:
             await state.update_data(image2=message.photo[-1].file_id)
@@ -298,6 +304,8 @@ async def add_image2(message: types.Message, state: FSMContext):
 async def add_image3(message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot):
     if message.text and message.text == "." and AddProduct.product_for_change:
             await state.update_data(image3=AddProduct.product_for_change.image3)
+            await message.answer("🖼️ Отлично! Теперь загрузите изображение 4:", reply_markup=keyboard)
+            await state.set_state(AddProduct.image4)
 
     elif message.photo:
             await state.update_data(image3=message.photo[-1].file_id)
