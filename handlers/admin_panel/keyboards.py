@@ -51,7 +51,7 @@ def get_categories_footwear_keyboard():  # -> обувь
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="Кроссовки"), KeyboardButton(text="Сандалии"), KeyboardButton(text="Ботинки")],
-            [KeyboardButton(text="Туфли"), KeyboardButton(text="Сапоги"), KeyboardButton(text="Отмена")],
+            [KeyboardButton(text="Туфли"), KeyboardButton(text="Сапоги"), KeyboardButton(text="Классические ботинки")],
             [KeyboardButton(text="Отмена"), KeyboardButton(text="Назад")]
         ],
         resize_keyboard=True
