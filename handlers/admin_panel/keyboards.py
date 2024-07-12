@@ -121,12 +121,10 @@ def get_sizes_footwear_keyboard():
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="35"), KeyboardButton(text="36"), KeyboardButton(text="37"),
-             KeyboardButton(text="37,5-38"), KeyboardButton(text="38,5-39"), KeyboardButton(text="39")],
-            [KeyboardButton(text="39,5-40"), KeyboardButton(text="40"), KeyboardButton(text="40-40,5"),
-             KeyboardButton(text="40,5-41"), KeyboardButton(text="41,5-42"), KeyboardButton(text="42")],
-            [KeyboardButton(text="42,5-43"), KeyboardButton(text="43"), KeyboardButton(text="43-44"),
-             KeyboardButton(text="44-45"), KeyboardButton(text="45"), KeyboardButton(text="45-46")],
-            [KeyboardButton(text="46"), KeyboardButton(text="46-47")],
+             KeyboardButton(text="38"), KeyboardButton(text="39")],
+            [KeyboardButton(text="40"), KeyboardButton(text="41"), KeyboardButton(text="42"),
+             KeyboardButton(text="43"), KeyboardButton(text="44"), KeyboardButton(text="45")],
+            [KeyboardButton(text="46"), KeyboardButton(text="47")],
             [KeyboardButton(text="Отмена"), KeyboardButton(text="Назад")]
         ],
         resize_keyboard=True

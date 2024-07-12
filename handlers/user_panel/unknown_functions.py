@@ -101,7 +101,7 @@ async def back_handler(message: types.Message, state: FSMContext) -> None:
             await message.answer("Выберите размер:",
                                  reply_markup=get_sizes_clothing_keyboard())
             await state.set_state(AddProduct.size)
-        elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "сапоги"]:
+        elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "сапоги","классические ботинки"]:
             await message.answer("Выберите размер:",
                                  reply_markup=get_sizes_footwear_keyboard())
             await state.set_state(AddProduct.size)

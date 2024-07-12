@@ -186,8 +186,8 @@ async def get_size(message: types.Message, state: FSMContext):
         await state.update_data(size=size)
 
     if size in ["xs", "s", "m", "l", "xl", "xxl"] or size in [
-        "35", "36", "37", "37,5-38", "38,5-39", "39", "39,5-40", "40", "40-40,5", "40,5-41",
-        "41,5-42", "42", "42,5-43", "43", "43-44", "44-45", "45", "45-46", "46", "46-47"
+        "35", "36", "37", "38", "39", "40", "41",
+        "42", "43", "44", "45", "46", "47"
     ]:
         await message.answer("Для какого  предназначен товар:",
                              reply_markup=get_gender_keyboard())
