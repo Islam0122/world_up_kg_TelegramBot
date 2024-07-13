@@ -22,19 +22,20 @@ def get_sections_keyboard():
     )
     return keyboard
 
-
 def get_categories_clothing_keyboard():
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="Кофты"), KeyboardButton(text="Лонгсливы"),  # Long sleeves
-                KeyboardButton(text="Худи"), KeyboardButton(text="Футболка")
+                KeyboardButton(text="футболка"), KeyboardButton(text="лонгсливы"),  # Long sleeves
+                KeyboardButton(text="cвитшоты"), KeyboardButton(text="толстовки")
             ],
             [
-                KeyboardButton(text="Штаны"),  # Pants
-                KeyboardButton(text="Куртки"),  # Jackets
-                KeyboardButton(text="Шорты"),  # Shorts
-                KeyboardButton(text="Отмена")
+                KeyboardButton(text="куртки"),  # Pants
+                KeyboardButton(text="жилетки"),  # Jackets
+                KeyboardButton(text="шорты"),  # Shorts
+                KeyboardButton(text="штаны"),
+                KeyboardButton(text="кепки")
+
             ],
             [
                 KeyboardButton(text="Отмена"),
@@ -46,13 +47,12 @@ def get_categories_clothing_keyboard():
     return keyboard
 
 
-
 def get_categories_footwear_keyboard():  # -> обувь
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Кроссовки"), KeyboardButton(text="Сандалии"), KeyboardButton(text="Ботинки")],
-            [KeyboardButton(text="Туфли"), KeyboardButton(text="Сапоги"), KeyboardButton(text="Классические ботинки")],
-            [KeyboardButton(text="Отмена"), KeyboardButton(text="Назад")]
+            [KeyboardButton(text="кроссовки"), KeyboardButton(text="ботинки"), KeyboardButton(text="сандалии")],
+            [KeyboardButton(text="туфли"), KeyboardButton(text="слипоны"), KeyboardButton(text="кеды")],
+            [KeyboardButton(text="шлепки"),KeyboardButton(text="Отмена"), KeyboardButton(text="Назад")]
         ],
         resize_keyboard=True
     )
@@ -62,11 +62,10 @@ def get_categories_wear_keyboard():  # -> о другие
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="Электроника"), KeyboardButton(text="Игрушки"),
-                KeyboardButton(text="Книги"), KeyboardButton(text="Спорттовары")
+                KeyboardButton(text="сумка"), KeyboardButton(text="рюкзак"),
             ],
             [
-                KeyboardButton(text="Аксессуары"),
+                KeyboardButton(text="баф"),
             ],
             [
                 KeyboardButton(text="Отмена"), KeyboardButton(text="Назад")

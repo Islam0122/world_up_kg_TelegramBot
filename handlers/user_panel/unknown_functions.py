@@ -97,16 +97,18 @@ async def back_handler(message: types.Message, state: FSMContext) -> None:
             await message.answer("⚠️ Пожалуйста, используйте кнопки на клавиатуре.")
     if current_state == AddProduct.gender:
         category = data['category']
-        if category in ["кофты", "лонгсливы", "футболки", "худи", "куртки", "штаны", "шорты"]:
+        if category in ["футболка", "лонгсливы", "cвитшоты", "толстовки", "куртки", "жилетки", "штаны", "шорты",
+                        "кепки"]:
             await message.answer("Выберите размер:",
                                  reply_markup=get_sizes_clothing_keyboard())
             await state.set_state(AddProduct.size)
-        elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "сапоги","классические ботинки"]:
+        elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "слипоны", "кеды", "шлепки"]:
             await message.answer("Выберите размер:",
                                  reply_markup=get_sizes_footwear_keyboard())
             await state.set_state(AddProduct.size)
 
-        else:
+
+    else:
             await message.answer("⚠️ Пожалуйста, используйте кнопки на клавиатуре.")
     if current_state == AddProduct.price:
         await message.answer("Для какого  предназначен товар:",

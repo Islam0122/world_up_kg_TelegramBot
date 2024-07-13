@@ -152,15 +152,15 @@ async def get_category(message: types.Message, state: FSMContext):
     else:
         await state.update_data(category=category)
     # Дальнейшие действия в зависимости от выбранной категории
-    if category in ["кофты", "лонгсливы", "футболка", "худи", "куртки", "штаны", "шорты"]:
+    if category in ["футболка", "лонгсливы", "cвитшоты","толстовки", "куртки","жилетки", "штаны", "шорты","кепки"]:
         await message.answer("Выберите размер:",
                              reply_markup=get_sizes_clothing_keyboard())
         await state.set_state(AddProduct.size)
-    elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "сапоги","классические ботинки"]:
+    elif category in ["кроссовки", "ботинки", "сандалии", "туфли", "слипоны","кеды","шлепки"]:
         await message.answer("Выберите размер:",
                              reply_markup=get_sizes_footwear_keyboard())
         await state.set_state(AddProduct.size)
-    elif category in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"]:
+    elif category in ["сумка", "рюкзак", "баф"]:
         await state.update_data(size='.')
         await message.answer("Для какого  предназначен товар:",
                              reply_markup= get_gender_gen_keyboard())
@@ -211,7 +211,7 @@ async def get_type(message: types.Message, state: FSMContext):
         await state.update_data(gender=AddProduct.product_for_change.gender)
         await message.answer("💬 Отлично! Теперь введите стоимость:", reply_markup=keyboard)
         await state.set_state(AddProduct.price)
-    if data['category'] in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"] and gender.lower() in ["Мужской","Женская","Для всех",]:
+    if data['category'] in ["сумка", "рюкзак", "баф"] and gender.lower() in ["Мужской","Женская","Для всех",]:
         keyboardфы = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Отмена")],
@@ -242,7 +242,7 @@ async def add_price(message: types.Message, state: FSMContext):
         await state.update_data(price=AddProduct.product_for_change.price)
     else:
         await state.update_data(price=message.text)
-    if data['category'] in ["электроника", "игрушки", "книги", "спорттовары", "аксессуары"]:
+    if data['category'] in ["сумка", "рюкзак", "баф"]:
         keyboardфы = ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text="Отмена")],
