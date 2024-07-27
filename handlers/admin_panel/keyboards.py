@@ -26,7 +26,7 @@ def get_categories_clothing_keyboard():
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="футболка"), KeyboardButton(text="лонгсливы"),  # Long sleeves
+                KeyboardButton(text="футболки"), KeyboardButton(text="лонгсливы"),  # Long sleeves
             ],
             [KeyboardButton(text="куртки"), KeyboardButton(text="жилетки"),  # Jackets
              ],

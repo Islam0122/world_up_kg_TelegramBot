@@ -97,7 +97,7 @@ async def back_handler(message: types.Message, state: FSMContext) -> None:
             await message.answer("⚠️ Пожалуйста, используйте кнопки на клавиатуре.")
     if current_state == AddProduct.gender:
         category = data['category']
-        if category in ["футболка", "лонгсливы", "cвитшоты", "толстовки", "куртки", "жилетки", "штаны", "шорты",
+        if category in ["футболки","худи", "лонгсливы", "cвитшоты", "толстовки", "куртки", "жилетки", "штаны", "шорты",
                         "кепки"]:
             await message.answer("Выберите размер:",
                                  reply_markup=get_sizes_clothing_keyboard())
