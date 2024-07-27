@@ -38,7 +38,7 @@ from aiogram.client.session.aiohttp import AiohttpSession
 session = AiohttpSession(proxy="http://proxy.server:3128")
 
 bot = Bot(token=os.getenv('TOKEN'),parse_mode=ParseMode.HTML)
-bot.my_admins_list = [5627082052, ]
+bot.my_admins_list = [5627082052,6703037036,974193106,640066788, ]
 
 dp = Dispatcher()
 

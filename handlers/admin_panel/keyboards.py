@@ -27,14 +27,14 @@ def get_categories_clothing_keyboard():
         keyboard=[
             [
                 KeyboardButton(text="футболка"), KeyboardButton(text="лонгсливы"),  # Long sleeves
-                KeyboardButton(text="cвитшоты"), KeyboardButton(text="толстовки")
             ],
+            [KeyboardButton(text="куртки"), KeyboardButton(text="жилетки"),  # Jackets
+             ],
+            [ KeyboardButton(text="cвитшоты"), KeyboardButton(text="толстовки")],
+            [KeyboardButton(text="шорты"), KeyboardButton(text="штаны"),],
             [
-                KeyboardButton(text="куртки"),  # Pants
-                KeyboardButton(text="жилетки"),  # Jackets
-                KeyboardButton(text="шорты"),  # Shorts
-                KeyboardButton(text="штаны"),
-                KeyboardButton(text="кепки")
+                KeyboardButton(text="кепки"),
+                KeyboardButton(text="худи"),
 
             ],
             [
@@ -51,7 +51,7 @@ def get_categories_footwear_keyboard():  # -> обувь
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="кроссовки"), KeyboardButton(text="ботинки"), KeyboardButton(text="сандалии")],
-            [KeyboardButton(text="туфли"), KeyboardButton(text="слипоны"), KeyboardButton(text="кеды")],
+            [ KeyboardButton(text="слипоны"), KeyboardButton(text="кеды")],
             [KeyboardButton(text="шлепки"),KeyboardButton(text="Отмена"), KeyboardButton(text="Назад")]
         ],
         resize_keyboard=True
