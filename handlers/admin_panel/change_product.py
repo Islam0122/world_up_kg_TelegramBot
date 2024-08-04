@@ -65,14 +65,14 @@ cancel_messages = {
 
 
 # ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> add  product
-@add_product_router.message(StateFilter(None), F.text == "➕ Добавить товар")
-@add_product_router.message(StateFilter(None), Command('add_product'))
+@add_product_router.message( F.text == "➕ Добавить товар")
+@add_product_router.message( Command('add_product'))
 async def add_product(message: types.Message, state: FSMContext):
     await message.answer("🛍️ Введите название:", reply_markup=keyboard)
     await state.set_state(AddProduct.name)
 
 
-@add_product_router.callback_query(StateFilter(None), F.data.startswith("add_product"))
+@add_product_router.callback_query( F.data.startswith("add_product"))
 async def add_product(callback: types.CallbackQuery, session: AsyncSession, state: FSMContext):
     message = callback.message
     await message.answer("🛍️ Введите название:", reply_markup=keyboard)
