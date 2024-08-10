@@ -51,7 +51,7 @@ def create_inline_keyboard(language):
         InlineKeyboardButton(text=messages[language]['review'], callback_data="review"),
         InlineKeyboardButton(text=messages[language]['help'], callback_data="help"),
         InlineKeyboardButton(text=messages[language]['about_us'], callback_data="about_us"),
-        InlineKeyboardButton(text=messages[language]['our_channel'], url="https://t.me/WourldUpKg"),
+        InlineKeyboardButton(text=messages[language]['our_channel'], url="https://t.me/worldupkg"),
         InlineKeyboardButton(text=messages[language]['our_instagram'], url="https://www.instagram.com/world_up_kg?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="),
         InlineKeyboardButton(text=messages[language]['select_language'], callback_data="select_language")
     )
