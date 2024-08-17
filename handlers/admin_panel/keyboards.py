@@ -2,6 +2,11 @@ from aiogram import types, Dispatcher
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+def create_product_keyboard():
+    keyboard = InlineKeyboardBuilder()    # Передаем product_id в callback_data
+    button = InlineKeyboardButton(text="В магазин", url="https://t.me/World_up_kg_bot")
+    keyboard.add(button)
+    return keyboard.adjust().as_markup()
 
 def admin_inline_keyboard():
     keyboard = InlineKeyboardBuilder()

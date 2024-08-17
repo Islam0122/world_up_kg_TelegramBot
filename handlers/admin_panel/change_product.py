@@ -8,7 +8,8 @@ from database.config import group_admin_chat_id, chat_id
 from filter.chat_types import ChatTypeFilter, IsAdmin
 from handlers.admin_panel.keyboards import get_sections_keyboard, admin_inline_keyboard, \
     get_categories_clothing_keyboard, get_categories_footwear_keyboard, get_categories_wear_keyboard, \
-    get_sizes_clothing_keyboard, get_sizes_footwear_keyboard, get_gender_keyboard, get_gender_gen_keyboard
+    get_sizes_clothing_keyboard, get_sizes_footwear_keyboard, get_gender_keyboard, get_gender_gen_keyboard, \
+    create_product_keyboard
 from handlers.user_panel.order_functions import OrderState, texts
 from handlers.user_panel.start_functions import user_preferences
 from keyboard_list.reply import get_keyboard
@@ -387,13 +388,13 @@ async def add_image4(message: types.Message, state: FSMContext, session: AsyncSe
             )
             media = [types.InputMediaPhoto(media=photo_id, caption=text) for photo_id in photos]
 
-            # Send the notification to the admin group chat
-            # await bot.send_photo(group_admin_chat_id, data['image'], caption=text)
-            await bot.send_media_group(group_admin_chat_id, media=media, )
-            await bot.send_message(group_admin_chat_id,text=text)
-            # # Send the notification to the user chaу
-            await bot.send_media_group(chat_id, media=media,)
-            await bot.send_message(chat_id, text=text)
+            keyboard = create_product_keyboard()
+
+            # Отправляем сообщение и медиа в администраторский чат и пользовательский чат
+            await bot.send_media_group(group_admin_chat_id, media=media)
+            await bot.send_message(group_admin_chat_id, text=text)
+            await bot.send_media_group(chat_id, media=media)
+            await bot.send_message(chat_id, text=text, reply_markup=keyboard)
 
             # Notify the user of the successful operation
             await message.answer("✅ Успешно добавлен!", reply_markup=keyboard)
